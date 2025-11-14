@@ -1,17 +1,308 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta name="Asher" content="Web test" />
-        <meta
-            name="description"
-            content="This is a website for learning HTML, CSS ans JS." />
-        <link href="styles/style.css" rel="stylesheet" />
-        <link rel="icon" href="images/波奇1.webp" type="images/webp" />
-        <title>My test project for sub_website</title>
-    </head>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>反直觉概率模拟器</title>
+    <style>
+        /* 基础样式 */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 0;
+            background-color: #f4f7f6;
+            color: #333;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
 
-    <body>
-        <h1>I am the most passionate fan of fyk!!!</h1>
-    </body>
+        /* 菜单栏 (Navigation) */
+        nav {
+            background-color: #007bff;
+            padding: 10px 0;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+        }
+        nav li {
+            margin: 0 15px;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1em;
+            padding: 10px 15px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        nav a:hover, nav a.active {
+            background-color: #0056b3;
+        }
+
+        /* 内容区域 */
+        .simulation-section {
+            display: none; /* 默认隐藏所有内容区 */
+            background-color: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .simulation-section.active {
+            display: block; /* 只显示激活的 */
+        }
+        h2 {
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+            color: #007bff;
+        }
+        p {
+            line-height: 1.6;
+        }
+        
+        /* 输入和按钮 */
+        .controls {
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px; /* 元素间距 */
+        }
+        .controls label {
+            font-weight: bold;
+        }
+        .controls input[type="number"] {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 100px;
+        }
+        .controls button {
+            padding: 10px 15px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s;
+        }
+        .controls button:hover {
+            background-color: #218838;
+        }
+
+        /* 结果展示 */
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e9f5fe;
+            border: 1px solid #bce8f1;
+            border-radius: 4px;
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #31708f;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>🎲 蒙特卡洛随机现象模拟</h1>
+        
+        <nav>
+            <ul>
+                <li><a href="#" class="nav-link active" data-target="welcome">欢迎</a></li>
+                <li><a href="#" class="nav-link" data-target="birthday">生日悖论</a></li>
+                <li><a href="#" class="nav-link" data-target="monty-hall">蒙提霍尔</a></li>
+                <li><a href="#" class="nav-link" data-target="gambler">赌徒破产</a></li>
+            </ul>
+        </nav>
+
+        <section id="welcome" class="simulation-section active">
+            <h2>欢迎！</h2>
+            <p>请在上方菜单中选择一个您感兴趣的反直觉概率现象。</p>
+            <p>本项目使用蒙特卡洛模拟方法，通过（JavaScript）运行大量随机试验来“眼见为实”，验证那些令人困惑的概率问题。</p>
+        </section>
+
+        <section id="birthday" class="simulation-section">
+            <h2>🎂 生日悖论</h2>
+            <p>现象：一个房间里需要多少人，才能使“至少有两个人生日相同”的概率超过 50%？</p>
+            <p>直觉：大概 183 人 (365/2)？ <strong>事实：只需要 23 人！</strong></p>
+            
+            <div class="controls">
+                <label for="birthday-people">房间人数：</label>
+                <input type="number" id="birthday-people" value="23">
+                <label for="birthday-trials">模拟次数：</label>
+                <input type="number" id="birthday-trials" value="10000">
+                <button id="run-birthday">开始模拟</button>
+            </div>
+            
+            <div id="birthday-result" class="result" style="display:none;"></div>
+        </section>
+
+        <section id="monty-hall" class="simulation-section">
+            <h2>🐐 蒙提霍尔问题</h2>
+            <p>现象：三扇门，一扇后有车，两扇后有山羊。你选1号门后，主持人打开3号门（山羊）。你是否应该换到2号门？</d>
+            <p>直觉：剩下两扇门，概率 50/50。 <strong>事实：换门，赢率翻倍 (从 1/3 到 2/3)！</strong></p>
+            
+            <div class="controls">
+                <label for="monty-trials">模拟次数：</label>
+                <input type="number" id="monty-trials" value="10000">
+                <button id="run-monty">开始模拟</button>
+            </div>
+            
+            <div id="monty-result" class="result" style="display:none;"></div>
+        </section>
+
+        <section id="gambler" class="simulation-section">
+            <h2>💸 赌徒破产</h2>
+            <p>现象：你 (A) 有 100 元，对手 (B) 有 1000 元，玩公平的抛硬币（赌1元）。谁先破产？</p>
+            <p>直觉：公平游戏，概率 50/50。 <strong>事实：你的破产率高达 90.9%！</strong></p>
+
+            <div class="controls">
+                <label for="gambler-trials">模拟次数：</label>
+                <input type="number" id="gambler-trials" value="1000">
+                <button id="run-gambler">开始模拟</button>
+            </div>
+            
+            <div id="gambler-result" class="result" style="display:none;"></div>
+        </section>
+
+    </div>
+
+    <script>
+        // === 第 1 部分：菜单栏导航 ===
+        const navLinks = document.querySelectorAll('.nav-link');
+        const sections = document.querySelectorAll('.simulation-section');
+
+        // 导航点击事件
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault(); // 阻止链接默认跳转
+                
+                // 移除所有 'active' 状态
+                navLinks.forEach(l => l.classList.remove('active'));
+                sections.forEach(s => s.classList.remove('active'));
+
+                // 添加 'active' 状态
+                const targetId = link.getAttribute('data-target');
+                document.getElementById(targetId).classList.add('active');
+                link.classList.add('active');
+            });
+        });
+
+        // === 第 2 部分：蒙特卡洛模拟函数 ===
+        
+        // --- 模拟 1：生日悖论 ---
+        document.getElementById('run-birthday').addEventListener('click', () => {
+            const numPeople = parseInt(document.getElementById('birthday-people').value);
+            const numTrials = parseInt(document.getElementById('birthday-trials').value);
+            const resultDisplay = document.getElementById('birthday-result');
+
+            let successCount = 0; // 至少有两人同生日的次数
+
+            for (let i = 0; i < numTrials; i++) {
+                const birthdays = new Set(); // 使用 Set 来快速检测重复
+                let hasDuplicate = false;
+                for (let j = 0; j < numPeople; j++) {
+                    const birthday = Math.floor(Math.random() * 365) + 1; // 1 到 365
+                    if (birthdays.has(birthday)) {
+                        hasDuplicate = true;
+                        break; // 已发现重复，停止本轮模拟
+                    }
+                    birthdays.add(birthday);
+                }
+                if (hasDuplicate) {
+                    successCount++;
+                }
+            }
+
+            const probability = (successCount / numTrials) * 100;
+            resultDisplay.innerHTML = `模拟 ${numTrials} 次，${numPeople} 人的房间中：<br>
+                                       出现相同生日的概率 ≈ <strong>${probability.toFixed(2)}%</strong>`;
+            resultDisplay.style.display = 'block';
+        });
+
+        // --- 模拟 2：蒙提霍尔问题 ---
+        document.getElementById('run-monty').addEventListener('click', () => {
+            const numTrials = parseInt(document.getElementById('monty-trials').value);
+            const resultDisplay = document.getElementById('monty-result');
+
+            let stickWins = 0; // 坚持不换的胜利次数
+            let switchWins = 0; // 换门后的胜利次数
+
+            for (let i = 0; i < numTrials; i++) {
+                // 1. 随机设置车的位置 (0, 1, 2)
+                const carDoor = Math.floor(Math.random() * 3);
+                // 2. 玩家随机选择 (0, 1, 2)
+                const playerChoice = Math.floor(Math.random() * 3);
+                
+                // 3. 分析结果
+                // 策略 A: 坚持不换
+                if (playerChoice === carDoor) {
+                    stickWins++;
+                }
+
+                // 策略 B: 坚决要换
+                // 只要玩家一开始没选中车，他换门就必赢
+                if (playerChoice !== carDoor) {
+                    switchWins++;
+                }
+            }
+            
+            const stickProb = (stickWins / numTrials) * 100;
+            const switchProb = (switchWins / numTrials) * 100;
+
+            resultDisplay.innerHTML = `模拟 ${numTrials} 次：<br>
+                                       坚持不换的胜率 ≈ <strong>${stickProb.toFixed(2)}%</strong> (应接近 33.3%)<br>
+                                       坚决换门的胜率 ≈ <strong>${switchProb.toFixed(2)}%</strong> (应接近 66.7%)`;
+            resultDisplay.style.display = 'block';
+        });
+
+        // --- 模拟 3：赌徒破产 ---
+        document.getElementById('run-gambler').addEventListener('click', () => {
+            const numTrials = parseInt(document.getElementById('gambler-trials').value);
+            const resultDisplay = document.getElementById('gambler-result');
+            
+            const moneyA = 100; // 玩家 A 的本金
+            const moneyB = 1000; // 玩家 B 的本金
+            let aBankruptCount = 0; // A 破产的次数
+
+            for (let i = 0; i < numTrials; i++) {
+                let a = moneyA;
+                let b = moneyB;
+                
+                // 开始单局游戏，直到一方破产
+                while (a > 0 && b > 0) {
+                    if (Math.random() < 0.5) { // 公平硬币
+                        a++; b--;
+                    } else {
+                        a--; b++;
+                    }
+                }
+                
+                if (a === 0) {
+                    aBankruptCount++;
+                }
+                // (注意：单局游戏可能要很久，1000 次模拟可能需要几秒钟)
+            }
+            
+            const bankruptProb = (aBankruptCount / numTrials) * 100;
+            const theoryProb = (moneyB / (moneyA + moneyB)) * 100;
+
+            resultDisplay.innerHTML = `模拟 ${numTrials} 局游戏 (A: ${moneyA}元, B: ${moneyB}元)：<br>
+                                       玩家 A (你) 的破产率 ≈ <strong>${bankruptProb.toFixed(2)}%</strong><br>
+                                       (理论破产率：${theoryProb.toFixed(2)}%)`;
+            resultDisplay.style.display = 'block';
+        });
+
+    </script>
+</body>
 </html>
